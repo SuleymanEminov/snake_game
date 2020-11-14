@@ -4,6 +4,9 @@ from snake import Snake
 from food import Food
 from scoreboard import Scoreboard
 
+# CONSTANTS
+SPEED = 0.07
+
 # set up screen
 screen = Screen()
 screen.setup(width=600, height=600)
@@ -12,16 +15,17 @@ screen.title("Snake Game")
 screen.tracer(0)
 
 
+# initialize snake
+snake = Snake()
+
+# initialize food
+food = Food()
+
+# initialize scoreboard
+scoreboard = Scoreboard()
+
+
 def main():
-    # initialize snake
-    snake = Snake()
-
-    # initialize food
-    food = Food()
-
-    # initialize scoreboard
-    scoreboard = Scoreboard()
-
     screen.listen()
 
     # listen to keys. Turn snake
@@ -33,21 +37,44 @@ def main():
     game_is_on = True
     while game_is_on:
         screen.update()
-        time.sleep(.05)
+        time.sleep(SPEED)
 
         snake.move()
 
-        # Detect collision with food
-        if snake.head.distance(food) < 15: # 15 is a distance between food and head of the snake
-            food.refresh()
+        collision_with_food()  # check if snake collided with food
 
-            scoreboard.increase_score()
+        game_is_on = collision_with_wall(game_is_on)  # check if snake collided with wall
 
-        # Detect collision with wall
-        if snake.head.xcor() > 280 or snake.head.xcor() < -280 or snake.head.ycor() > 280 or snake.head.ycor() < -280:
+        game_is_on = collision_with_tail(game_is_on)  # check if snake collided with tail
+
+
+def collision_with_food():
+    # Detect collision with food
+    if snake.head.distance(food) < 15:  # 15 is a distance between food and head of the snake
+        food.refresh()
+        snake.extend()
+        scoreboard.increase_score()
+
+
+def collision_with_wall(game_is_on):
+    # Detect collision with wall
+    if snake.head.xcor() > 280 or snake.head.xcor() < -280 or snake.head.ycor() > 280 or snake.head.ycor() < -280:
+        game_is_on = False
+        scoreboard.game_over()
+
+    return game_is_on
+
+
+def collision_with_tail(game_is_on):
+    # Detect collision with tail
+    # if head collides with any segment in the tail:
+    # trigger game_over
+    for segment in snake.segments[1:]:
+        if snake.head.distance(segment) < 10:
             game_is_on = False
             scoreboard.game_over()
 
+    return game_is_on
 
 
 main()

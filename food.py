@@ -1,6 +1,9 @@
 from turtle import Turtle
 import random
 
+# CONSTANTS
+BORDER = 260
+
 
 class Food(Turtle):
 
@@ -14,6 +17,6 @@ class Food(Turtle):
         self.refresh()
 
     def refresh(self):
-        random_x = random.randint(-280, 280)
-        random_y = random.randint(-280, 280)
+        random_x = random.randint(-BORDER, BORDER)
+        random_y = random.randint(-BORDER, BORDER)
         self.goto(random_x, random_y)
